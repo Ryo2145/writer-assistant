@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jana's Pink 寫文助手</title>
+  <style>
+    :root {
+      --bg: #fdf8f9;
+      --surface: #ffffff;
+      --surface-2: #fff5f7;
+      --border: #f0d9df;
+      --text: #3d2f35;
+      --text-muted: #8a7078;
+      --accent: #e8759a;
+      --accent-hover: #d45f86;
+      --accent-soft: rgba(232, 117, 154, 0.12);
+      --accent-deep: #c94b78;
+      --sakura: #ffc9d6;
+      --success: #6aab8e;
+      --shadow: 0 2px 8px rgba(200, 100, 130, 0.08), 0 8px 24px rgba(200, 100, 130, 0.06);
+      --radius: 14px;
+      --radius-sm: 10px;
+      --font: "Segoe UI", "PingFang TC", "Microsoft JhengHei", "Hiragino Sans", sans-serif;
+      --mono: "Cascadia Code", "Consolas", monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      background-image:
+        radial-gradient(ellipse at 10% 0%, rgba(255, 201, 214, 0.35) 0%, transparent 50%),
+        radial-gradient(ellipse at 90% 100%, rgba(232, 117, 154, 0.1) 0%, transparent 50%);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem 4rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.25rem;
+    }
+
+    .brand {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .brand-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--accent), var(--sakura));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      box-shadow: var(--shadow);
+    }
+
+    .brand h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--accent-deep);
+      letter-spacing: .02em;
+    }
+
+    .brand .tagline {
+      font-size: .85rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .brand .site-link {
+      font-size: .78rem;
+      color: var(--accent);
+      text-decoration: none;
+      margin-top: .15rem;
+    }
+
+    .brand .site-link:hover { text-decoration: underline; }
+
+    .category-pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: .45rem;
+      margin-top: 1rem;
+    }
+
+    .pill {
+      font-size: .72rem;
+      font-weight: 600;
+      padding: .25rem .7rem;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      border: 1px solid var(--border);
+    }
+
+    .input-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+    }
+
+    .input-panel label {
+      display: block;
+      font-weight: 600;
+      font-size: .9rem;
+      color: var(--accent-deep);
+      margin-bottom: .4rem;
+    }
+
+    .input-panel .hint {
+      font-size: .8rem;
+      color: var(--text-muted);
+      margin-bottom: .75rem;
+    }
+
+    .input-row {
+      display: grid;
+      gap: .75rem;
+      margin-bottom: .75rem;
+    }
+
+    @media (min-width: 560px) {
+      .input-row { grid-template-columns: 1fr 160px; }
+    }
+
+    textarea#topic {
+      width: 100%;
+      min-height: 80px;
+      padding: .85rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: .95rem;
+      resize: vertical;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    textarea#topic:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    select#category {
+      width: 100%;
+      padding: .85rem .75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: .9rem;
+      cursor: pointer;
+    }
+
+    select#category:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+      margin-top: .25rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      padding: .65rem 1.2rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: var(--font);
+      font-size: .875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(232, 117, 154, 0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(232, 117, 154, 0.45);
+    }
+
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent-deep);
+      background: var(--accent-soft);
+    }
+
+    .btn-copy {
+      background: var(--surface);
+      color: var(--accent-deep);
+      border: 1px solid var(--accent);
+      padding: .35rem .8rem;
+      font-size: .78rem;
+    }
+
+    .btn-copy:hover { background: var(--accent-soft); }
+
+    .btn-copy.copied {
+      background: var(--success);
+      border-color: var(--success);
+      color: #fff;
+    }
+
+    .output-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      animation: fadeIn .4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .9rem 1.25rem;
+      background: linear-gradient(90deg, var(--surface-2), var(--surface));
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+
+    .section-header h2 {
+      font-size: .92rem;
+      font-weight: 700;
+      color: var(--accent-deep);
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+    }
+
+    .section-header .badge {
+      font-size: .68rem;
+      font-weight: 600;
+      padding: .15rem .55rem;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+    }
+
+    .section-body { padding: 1.25rem; }
+
+    .title-list {
+      list-style: none;
+      counter-reset: titles;
+    }
+
+    .title-list li {
+      counter-increment: titles;
+      padding: .75rem 1rem .75rem 2.6rem;
+      margin-bottom: .55rem;
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--accent);
+      font-size: .9rem;
+      position: relative;
+      line-height: 1.55;
+    }
+
+    .title-list li::before {
+      content: counter(titles);
+      position: absolute;
+      left: .9rem;
+      font-weight: 700;
+      color: var(--accent);
+      font-size: .8rem;
+    }
+
+    .article-draft h3 {
+      font-size: 1.02rem;
+      margin: 1.3rem 0 .55rem;
+      color: var(--accent-deep);
+      padding-bottom: .3rem;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .article-draft h3:first-child { margin-top: 0; }
+
+    .article-draft p {
+      margin-bottom: .8rem;
+      font-size: .9rem;
+      line-height: 1.8;
+    }
+
+    .article-draft .feel {
+      display: inline-block;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      font-size: .78rem;
+      padding: .15rem .5rem;
+      border-radius: 4px;
+      margin-bottom: .5rem;
+      font-weight: 600;
+    }
+
+    .seo-pair {
+      display: grid;
+      gap: 1rem;
+    }
+
+    @media (min-width: 600px) {
+      .seo-pair { grid-template-columns: 1fr 1fr; }
+    }
+
+    .seo-item label {
+      display: block;
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: .35rem;
+    }
+
+    .seo-item .value {
+      background: var(--surface-2);
+      padding: .8rem;
+      border-radius: var(--radius-sm);
+      font-size: .88rem;
+      border: 1px solid var(--border);
+      line-height: 1.55;
+    }
+
+    .char-count {
+      font-size: .68rem;
+      color: var(--text-muted);
+      margin-top: .25rem;
+    }
+
+    .char-count.ok { color: var(--success); }
+    .char-count.warn { color: #c47a20; }
+
+    .social-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .social-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .social-card {
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      border: 1px solid var(--border);
+    }
+
+    .social-card .platform {
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: .5rem;
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+    }
+
+    .social-card .platform.fb { color: #1877f2; }
+    .social-card .platform.ig { color: #e1306c; }
+    .social-card .platform.threads { color: var(--text); }
+
+    .social-card p {
+      font-size: .83rem;
+      line-height: 1.65;
+      white-space: pre-wrap;
+    }
+
+    .social-card .copy-mini { margin-top: .65rem; width: 100%; }
+
+    .image-prompts { display: grid; gap: .8rem; }
+
+    .prompt-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+    }
+
+    .prompt-card .prompt-label {
+      font-size: .73rem;
+      font-weight: 700;
+      color: var(--accent-deep);
+      margin-bottom: .45rem;
+    }
+
+    .prompt-card pre {
+      font-family: var(--mono);
+      font-size: .78rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: var(--text);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3.5rem 1.5rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state .icon {
+      font-size: 2.8rem;
+      margin-bottom: .75rem;
+      opacity: .7;
+    }
+
+    .empty-state p { font-size: .9rem; }
+
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--accent-deep);
+      color: #fff;
+      padding: .7rem 1.4rem;
+      border-radius: 999px;
+      font-size: .85rem;
+      font-weight: 600;
+      opacity: 0;
+      transition: all .3s ease;
+      z-index: 1000;
+      pointer-events: none;
+      box-shadow: var(--shadow);
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .btn:disabled { opacity: .55; cursor: not-allowed; transform: none !important; }
+
+    kbd {
+      display: inline-block;
+      padding: .1rem .4rem;
+      font-size: .72rem;
+      font-family: var(--mono);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: .75rem;
+      color: var(--text-muted);
+    }
+
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="brand-icon">🌸</div>
+        <h1>Jana's Pink 寫文助手</h1>
+        <p class="tagline">Have a good day ;)</p>
+        <a class="site-link" href="https://janapink.com" target="_blank" rel="noopener">janapink.com</a>
+        <div class="category-pills">
+          <span class="pill">🇯🇵 日本旅遊</span>
+          <span class="pill">🍜 美食開箱</span>
+          <span class="pill">🏨 住宿體驗</span>
+          <span class="pill">💕 親切分享</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="input-panel">
+      <label for="topic">文章主題或關鍵字</label>
+      <p class="hint">輸入景點、餐廳、飯店或旅遊主題，用逗號或換行分隔。快捷鍵：<kbd>Ctrl</kbd> + <kbd>Enter</kbd></p>
+      <div class="input-row">
+        <textarea id="topic" placeholder="例：東京澀谷 Shibuya Sky、大阪道頓堀美食、京都日式旅館開箱"></textarea>
+        <select id="category" aria-label="文章類型">
+          <option value="travel">日本旅遊</option>
+          <option value="food">美食開箱</option>
+          <option value="hotel">住宿體驗</option>
+          <option value="guide">旅遊攻略</option>
+        </select>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" id="generateAll">
+          <span>🌸</span> 一鍵產生全部內容
+        </button>
+        <button class="btn btn-secondary" id="clearAll">清除結果</button>
+      </div>
+    </div>
+
+    <div id="outputs">
+      <div class="empty-state" id="emptyState">
+        <div class="icon">✈️</div>
+        <p>輸入主題後，點擊「一鍵產生全部內容」<br>為 Jana's Pink 產出專屬文章素材</p>
+      </div>
+    </div>
+
+    <footer>為 <a href="https://janapink.com" target="_blank" rel="noopener">Jana's Pink</a> 量身打造 · 日本旅遊 × 美食 × 住宿分享</footer>
+  </div>
+
+  <div class="toast" id="toast">已複製到剪貼簿</div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const $ = (sel) => document.querySelector(sel);
+      const topicEl = $('#topic');
+      const categoryEl = $('#category');
+      const outputsEl = $('#outputs');
+      const emptyStateEl = $('#emptyState');
+      const toastEl = $('#toast');
+
+      const CATEGORIES = {
+        travel: { label: '日本旅遊', emoji: '✈️', vibe: '探索日本的美好角落' },
+        food:   { label: '美食開箱', emoji: '🍜', vibe: '用味蕾記錄旅行' },
+        hotel:  { label: '住宿體驗', emoji: '🏨', vibe: '找到旅途中最舒服的家' },
+        guide:  { label: '旅遊攻略', emoji: '🗺️', vibe: '幫你規劃完美行程' },
+      };
+
+      function parseTopic(raw) {
+        const text = (raw || '').trim();
+        if (!text) return null;
+        const keywords = text.split(/[,，、\n]+/).map(k => k.trim()).filter(Boolean);
+        const main = keywords[0] || text;
+        return { main, keywords, full: text };
+      }
+
+      function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+      function pickN(arr, n) {
+        const copy = [...arr];
+        const result = [];
+        while (result.length < n && copy.length) {
+          const i = Math.floor(Math.random() * copy.length);
+          result.push(copy.splice(i, 1)[0]);
+        }
+        return result;
+      }
+
+      function showToast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add('show');
+        setTimeout(() => toastEl.classList.remove('show'), 2000);
+      }
+
+      async function copyText(text, btn) {
+        try {
+          await navigator.clipboard.writeText(text);
+          if (btn) {
+            const orig = btn.textContent;
+            btn.classList.add('copied');
+            btn.textContent = '✓ 已複製';
+            setTimeout(() => { btn.classList.remove('copied'); btn.textContent = orig; }, 1800);
+          }
+          showToast('已複製到剪貼簿');
+        } catch {
+          showToast('複製失敗，請手動選取');
+        }
+      }
+
+      /* ── Title generators (【】format) ── */
+      function getTitleTemplates(cat, topic) {
+        const m = topic.main;
+        const shared = [
+          () => `【${m}】親身走訪心得｜Jana 真心推薦不踩雷`,
+          () => `【${m}】完整攻略！在地人才知道的秘密`,
+          () => `【${m}】值得去嗎？說說我的真實感受`,
+          () => `【${m}】一日這樣玩｜行程＋交通＋小提醒`,
+          () => `【${m}】${new Date().getFullYear()}最新！行前必看懶人包`,
+          () => `【${m}】初訪也不慌｜Jana 貼心整理重點`,
+          () => `【${m}】CP值超高！回訪多次的愛店分享`,
+          () => `【${m}】療癒系推薦｜Have a good day 的小確幸`,
+        ];
+
+        const byCat = {
+          travel: [
+            () => `【${m}】日本旅遊｜漫步街頭的美好發現`,
+            () => `【${m}】拍照打卡＋深度體驗，兩種玩法都分享`,
+            () => `【${m}】自由行必收！交通與門票實用資訊`,
+          ],
+          food: [
+            () => `【${m}】美食開箱｜排隊也值得的滋味`,
+            () => `【${m}】吃貨必存！菜單推薦＋點餐攻略`,
+            () => `【${m}】在地風味初體驗｜Jana 的味蕾日記`,
+          ],
+          hotel: [
+            () => `【${m}】住宿開箱｜一夜好眠的秘密`,
+            () => `【${m}】房型＋設施＋周邊｜訂房前先看這篇`,
+            () => `【${m}】日式款待體驗｜入住真實感受分享`,
+          ],
+          guide: [
+            () => `【${m}】旅遊攻略｜行程表直接拿走`,
+            () => `【${m}】省錢又好玩｜Jana 精選路線規劃`,
+            () => `【${m}】新手友善指南｜從機場到景點一次懂`,
+          ],
+        };
+
+        return [...shared, ...(byCat[cat] || byCat.travel)];
+      }
+
+      function generateTitles(topic, cat) {
+        const templates = getTitleTemplates(cat, topic);
+        return pickN(templates, 5).map(fn => fn());
+      }
+
+      /* ── Article draft (friendly, personal, practical) ── */
+      function generateDraft(topic, cat) {
+        const catInfo = CATEGORIES[cat];
+        const kw = topic.keywords.length > 1
+          ? topic.keywords.slice(1).join('、')
+          : pick(['交通方式', '營業時間', '預算參考', '拍照景點']);
+
+        const intros = {
+          travel: [
+            `哈囉大家～ Jana 又來分享日本旅遊的美好時光了！這次想跟你們聊聊「${topic.main}」。老實說，出發前我也做了不少功課，實際到了現場才發現，有些感受是網路上查不到的。希望這篇分享能幫你更安心地規劃行程，一起 Have a good day ;)`,
+            `每次踏上日本的土地，總有說不完的故事。這趟造訪「${topic.main}」，從抵達的那一刻起就讓我心情很好。如果你也正在猶豫要不要把它排進行程，不妨先看看我的親身經驗，或許能給你一些靈感！`,
+          ],
+          food: [
+            `身為一個熱愛美食的旅人，遇到好吃的店真的會開心一整天！這次來到「${topic.main}」，從第一口就覺得——嗯，值得寫一篇跟大家分享。以下會完整記錄點餐建議、味道心得，還有一些小撇步，讓你少踩雷、多吃到好吃的！`,
+            `旅行中，美食往往是最深刻的記憶。這篇「${topic.main}」開箱，是我親自走訪後的真實感受，不誇張、不亂推，只想把覺得好的部分老實告訴你。如果你也喜歡用味蕾探索日本，這篇應該會對你有幫助～`,
+          ],
+          hotel: [
+            `住得好，旅程就成功一半！這次入住「${topic.main}」，我想從房型、設施到周邊環境，完整分享我的真實體驗。訂房前的猶豫、入住當下的感受、隔天醒來的心情——都整理在這篇裡了，給正在做功課的你參考。`,
+            `對我來說，一間舒服的住宿就像旅途中的避風港。這篇「${topic.main}」開箱，會以女生視角分享入住細節：check-in 流程、房內備品、隔音與清潔度，還有我最在意的「睡得好不好」。希望幫你找到安心的選擇！`,
+          ],
+          guide: [
+            `規劃日本自由行時，資訊太多常常看到眼花。這篇「${topic.main}」攻略，是我把實際走過的路線、踩過的坑、省下的時間，整理成一份好上手的懶人包。不用照單全收，挑適合你的部分就好，Jana 陪你一起把行程排得剛剛好～`,
+            `如果你正在準備日本之旅，這篇關於「${topic.main}」的攻略應該能幫上大忙！我會用親切、好懂的方式，把交通、時間安排和預算建議寫清楚，讓你不用當攻略狂人，也能玩得盡興。`,
+          ],
+        };
+
+        const sectionSets = {
+          travel: [
+            {
+              heading: `為什麼我會想去「${topic.main}」？`,
+              body: `其實吸引我的原因很簡單——${pick(['氛圍獨特', '交通方便', '拍照超美', '在地感濃厚'])}。出發前我特別留意了${kw}，實際體驗後覺得${pick(['比想像中更令人驚喜', '跟網路照片一樣美', '適合慢慢逛、不用趕行程'])}。\n\n小提醒：建議避開${pick(['週末正午人潮', '連假尖峰時段', '太晚抵達光線不佳的時段'])}，體驗會更好喔！`,
+              feel: '💭 第一印象',
+            },
+            {
+              heading: `交通方式與抵達資訊`,
+              body: `我這次是搭${pick(['電車', '地下鐵', '巴士'])}前往，整體來說${pick(['蠻直覺的', '轉乘一次就到', '建議先用 Google Maps 查好班次'])}。\n\n• 最近車站／站點：可依你住宿位置查詢\n• 步行時間：約 ${pick(['5', '8', '10', '15'])} 分鐘\n• 票券建議：若有購買交通券可一併使用\n\n老實說，日本大眾運輸很準時，但第一次走難免緊張，預留多一點時間會比較從容。`,
+              feel: '🚃 實用資訊',
+            },
+            {
+              heading: `現場體驗與推薦玩法`,
+              body: `到了現場，我最喜歡的部分是${pick(['街景與人文氛圍', '可以慢慢拍照的角落', '意外發現的小店', '夕陽時分的景色'])}。如果時間有限，我會建議優先：\n\n1. 先逛${pick(['主區域', '經典打卡點', '人比較少的側巷'])} \n2. 留 ${pick(['1–2', '2–3', '半天'])} 小時慢慢感受\n3. 搭配附近的${kw}一起安排，行程更豐富\n\n整體而言，我給這趟體驗 ${pick(['4.5', '5', '4'])} 顆星，值得納入行程！`,
+              feel: '✨ 真心話',
+            },
+          ],
+          food: [
+            {
+              heading: `初訪「${topic.main}」：環境與第一印象`,
+              body: `店內氛圍${pick(['溫馨可愛', '簡約乾淨', '很有日式風情'])}，服務人員態度也${pick(['很親切', '專業又有效率', '讓人放鬆'])}。尖峰時段可能需要排隊，建議${pick(['提早到店', '避開週末晚餐', '先查營業時間'])}。\n\n座位數量：${pick(['不多，建議先排隊', '中等，等候時間可接受', '寬敞，家庭也適合'])}`,
+              feel: '🏠 店內氛圍',
+            },
+            {
+              heading: `我點了什麼？推薦菜色分享`,
+              body: `這次我點了${pick(['招牌套餐', '人氣定食', '季節限定料理'])}，第一口的感受是——${pick(['驚艷！', '很對味', '比預期更好吃'])}。\n\n✅ 必點推薦：招牌主菜、配菜搭配剛剛好\n✅ 可嘗試：飲品或甜點，收尾很療癒\n⚠️ 小提醒：若不吃某類食材，建議先詢問店員\n\n價位我覺得${pick(['合理', '稍高但值得', 'CP 值不錯'])}，以這個品質來說可以接受。`,
+              feel: '🍽️ 味蕾心得',
+            },
+            {
+              heading: `實用小提示（訂位・付款・排隊）`,
+              body: `• 營業時間：出發前請再確認官方資訊\n• 付款方式：${pick(['現金為主，部分可刷卡', '現金與信用卡皆可', '建議備現金較保險'])}\n• 是否需預約：${pick(['假日建議預約', '通常現場排隊即可', '熱門時段排隊約 20–40 分鐘'])}\n\n我個人最喜歡的時刻是${pick(['剛開店時人較少', '午餐時段的日常感', '晚餐後的悠閒氛圍'])}，推薦給同樣喜歡慢慢享受美食的你。`,
+              feel: '📝 行前備忘',
+            },
+          ],
+          hotel: [
+            {
+              heading: `為什麼選擇「${topic.main}」？`,
+              body: `訂房時我最看重${pick(['地點便利性', '房間乾淨度', '日式服務細節', '性價比'])}。這間在${kw}方面表現不錯，網路上的評價也讓我蠻安心的。實際入住後，${pick(['確實沒讓我失望', '有幾個小驚喜', '整體符合期待'])}。`,
+              feel: '🔑 訂房理由',
+            },
+            {
+              heading: `房型・設施・入住體驗`,
+              body: `房間${pick(['雖不大但配置巧妙', '空間比想像寬敞', '乾淨舒適，睡得很好'])}。浴室備品${pick(['齊全', '有品牌沐浴用品', '基本款但足夠'])}，床墊軟硬適中，隔音${pick(['普通，建議戴耳塞', '不錯', '晚上很安靜'])}。\n\n設施亮點：\n• ${pick(['大浴場／溫泉', '免費 Wi-Fi', '行李寄放', '早餐'])} \n• 周邊有${pick(['便利商店', '車站', '餐廳'])}，生活機能方便`,
+              feel: '🛏️ 入住感受',
+            },
+            {
+              heading: `適合誰？老實優缺點分析`,
+              body: `✅ 適合：${pick(['情侶小旅行', '獨旅女生', '親子家庭', '想體驗日式服務的旅人'])}\n⚠️ 注意：${pick(['房型偏小，大件行李需留意', '部分時段電梯稍忙', '旺季價格浮動較大'])}\n\n如果問我會不會回訪——${pick(['會！下次還想住', '看行程，有機會會再考慮', '會推薦給朋友'])}。`,
+              feel: '💕 Jana 的結論',
+            },
+          ],
+          guide: [
+            {
+              heading: `「${topic.main}」適合誰？行程天數建議`,
+              body: `這份攻略適合${pick(['第一次來日本的新手', '想省時省力的旅人', '喜歡慢活節奏的人', '親子或好友出遊'])}。我建議安排 ${pick(['1', '2', '2–3'])} 天，不用排太滿，留點彈性給意外發現的美好。\n\n最佳旅遊季節：${pick(['春櫻（3–4月）', '秋楓（10–11月）', '冬季氛圍（12–2月）', '全年皆宜，依個人喜好'])}`,
+              feel: '🗓️ 行程規劃',
+            },
+            {
+              heading: `推薦路線與每日安排`,
+              body: `Day 1：抵達 → 熟悉周邊 → 輕鬆晚餐\nDay 2：主打「${topic.main}」核心景點／體驗 → 搭配${kw}\nDay 3（選配）：${pick(['近郊一日遊', '購物補貨', '再訪喜歡的地點'])}\n\n交通建議購買${pick(['區域周遊券', 'IC 卡（Suica／ICOCA）', '單程票＋步行'])}，實際花費依行程調整。`,
+              feel: '📍 路線參考',
+            },
+            {
+              heading: `預算・行李・文化小提醒`,
+              body: `• 預算參考（每人／天）：餐飲 + 交通 + 門票約 ${pick(['3,000–5,000', '5,000–8,000', '8,000–12,000'])} 日圓起\n• 行李：車站樓梯多，大行李箱建議搭配寄物服務\n• 禮儀：輕聲說話、排隊不插隊，日本人真的很重視這些\n\n這些都是我走過才整理的心得，希望能讓你的旅程更順利、更開心！`,
+              feel: '✈️ 貼心提醒',
+            },
+          ],
+        };
+
+        const conclusions = [
+          `以上就是我這次「${topic.main}」的完整分享！每次寫完都覺得，旅行的美好不在於去了多少景點，而是那些讓你會心一笑的瞬間。如果你也去過，歡迎留言告訴我你的感受；如果這篇對你有幫助，也請分享給正在規劃日本之旅的朋友。祝你 Have a good day ;)\n\n— Jana`,
+          `寫到這裡，又想起在「${topic.main}」的那段時光。希望這篇${catInfo.label}分享能成為你行程表上的好參考。日本每次去都有新發現，我們一起把旅途過得溫柔又充實吧！有問題隨時留言，Jana 看到都會回覆的～\n\n— Jana`,
+          `謝謝你讀到這裡！關於「${topic.main}」，如果你還有想了解的細節，歡迎在下方留言。我會持續在 Jana's Pink 分享日本旅遊、美食與住宿的真實體驗，我們下篇見！\n\nHave a good day ;)\n— Jana`,
+        ];
+
+        const intro = pick(intros[cat] || intros.travel);
+        const sections = sectionSets[cat] || sectionSets.travel;
+        const conclusion = pick(conclusions);
+
+        const fmt = (text) => text
+          .replace(/\n/g, '</p><p>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+        let html = `<span class="feel">${catInfo.emoji} ${catInfo.label}</span><h3>前言</h3><p>${fmt(intro)}</p>`;
+        sections.forEach(s => {
+          html += `<span class="feel">${s.feel}</span><h3>${s.heading}</h3><p>${fmt(s.body)}</p>`;
+        });
+        html += `<span class="feel">🌸 結語</span><h3>Jana 想說的話</h3><p>${fmt(conclusion)}</p>`;
+
+        const plain = [
+          `【${catInfo.label}】${topic.main}`,
+          '',
+          '── 前言 ──',
+          intro,
+          '',
+          ...sections.flatMap(s => [`── ${s.heading} ──`, s.body, '']),
+          '── Jana 想說的話 ──',
+          conclusion,
+        ].join('\n');
+
+        return { html, plain };
+      }
+
+      /* ── SEO ── */
+      function generateSEO(topic, titles, cat) {
+        const catLabel = CATEGORIES[cat].label;
+        let seoTitle = titles[0];
+        if (seoTitle.length > 60) seoTitle = seoTitle.slice(0, 57) + '...';
+
+        const descTemplates = [
+          `Jana 親身分享「${topic.main}」${catLabel}心得！含交通、推薦重點與真實感受，日本自由行必收。在 Jana's Pink 找到你的下一趟美好旅程，Have a good day ;)`,
+          `正在規劃日本之旅？這篇「${topic.main}」由 Jana 實地探訪整理，內容詳細實用、口吻親切，適合行前參考。更多日本旅遊、美食、住宿開箱都在 janapink.com！`,
+          `【${topic.main}】完整分享：實用資訊＋個人心得一次看。Jana's Pink 專注日本旅遊生活體驗，用溫柔文字陪你探索每個值得去的地方。`,
+        ];
+        let desc = pick(descTemplates);
+        if (desc.length > 160) desc = desc.slice(0, 157) + '...';
+        return { seoTitle, metaDescription: desc };
+      }
+
+      /* ── Social media ── */
+      function generateSocial(topic, titles, cat) {
+        const title = titles[0];
+        const url = 'https://janapink.com';
+        const catEmoji = CATEGORIES[cat].emoji;
+        const hashtags = [
+          '#JanasPink', '#日本旅遊', '#日本自由行',
+          ...topic.keywords.slice(0, 3).map(k => '#' + k.replace(/\s+/g, '')),
+        ].join(' ');
+
+        return {
+          fb: `${catEmoji} 新文章分享｜Jana's Pink\n\n${title}\n\n這次整理了關於「${topic.main}」的親身心得，從實用資訊到真實感受都寫進去了～ 如果你也正在規劃日本之旅，希望這篇能幫上忙！\n\n👉 完整文章：${url}\n\n${hashtags}\n\nHave a good day ;)`,
+          ig: `${title} ${catEmoji}\n\n.\n.\n.\n\n${topic.main}｜Jana 真心分享\n日本旅遊・美食・住宿開箱\n每一篇都是親自走訪的體驗 ✨\n\n${hashtags}\n\n🔗 連結在 Bio\n@janapink`,
+          threads: `剛在 Jana's Pink 更新了「${topic.main}」🌸\n\n${title}\n\n重點速覽：\n→ 親身走訪的真實感受\n→ 實用資訊不藏私\n→ 適合誰、怎麼玩都寫好了\n\n日本之旅想排得更順？這篇可以收藏一下 👇\n${url}\n\nHave a good day ;)`,
+        };
+      }
+
+      /* ── Grok Imagine prompts (日系清新) ── */
+      function generateImagePrompts(topic, cat) {
+        const main = topic.main;
+        const scene = {
+          travel: 'a serene Japanese street scene with soft cherry blossom tones',
+          food: 'beautifully plated Japanese cuisine on a wooden table near a window',
+          hotel: 'a cozy Japanese hotel room with tatami elements and warm ambient light',
+          guide: 'a flat-lay travel planning scene with map, train pass and camera on a light linen cloth',
+        }[cat] || 'a peaceful Japanese travel moment';
+
+        const style = pick([
+          'soft natural daylight with airy pastel tones',
+          'gentle morning light filtering through sheer curtains',
+          'golden hour warmth with delicate pink and cream hues',
+          'bright overcast light creating an even, dreamy atmosphere',
+        ]);
+
+        return [
+          {
+            label: '文章主圖（Featured Image · 16:9）',
+            prompt: `A wide 16:9 hero image for a Japanese lifestyle travel blog article about "${main}". ${scene}, captured in ${style}. The mood is fresh, gentle and inviting — like a personal travel diary from Jana's Pink. Clean composition with soft negative space on the left for text overlay. Japanese aesthetic with subtle pink accents, no text, no watermarks, no logos.`,
+          },
+          {
+            label: '社群分享圖（Social · 1:1）',
+            prompt: `A square 1:1 social media image about "${main}" for a feminine Japanese travel blog. ${scene}, ${style}, with a dreamy soft-focus background and a clear central subject. Pastel pink and cream color palette, Instagram-worthy yet authentic. Feels warm, approachable and scroll-stopping at thumbnail size. No text, no watermarks, no logos.`,
+          },
+          {
+            label: '內文配圖（In-Article · 4:3）',
+            prompt: `A 4:3 in-article photograph illustrating "${main}" for a Japanese travel and lifestyle blog. ${scene}, shot in ${style} with a calm, editorial quality. Natural colors, minimal clutter, evokes the feeling of sharing a lovely discovery with a friend. Subtle sakura-pink undertones throughout. No text, no watermarks, no identifiable faces unless as soft silhouettes from behind.`,
+          },
+        ];
+      }
+
+      /* ── Render ── */
+      function renderSection(id, title, badge, bodyHTML) {
+        return `
+          <div class="output-section" id="section-${id}">
+            <div class="section-header">
+              <h2>${title} ${badge ? `<span class="badge">${badge}</span>` : ''}</h2>
+              <button class="btn btn-copy" data-copy="${id}">📋 一鍵複製</button>
+            </div>
+            <div class="section-body">${bodyHTML}</div>
+          </div>`;
+      }
+
+      function renderAll(data) {
+        emptyStateEl.style.display = 'none';
+
+        const titlesHTML = `<ol class="title-list">${data.titles.map(t => `<li>${t}</li>`).join('')}</ol>`;
+        const titlesCopy = data.titles.map((t, i) => `${i + 1}. ${t}`).join('\n');
+
+        const draftHTML = `<div class="article-draft">${data.draft.html}</div>`;
+
+        const seoHTML = `
+          <div class="seo-pair">
+            <div class="seo-item">
+              <label>SEO Title</label>
+              <div class="value">${data.seo.seoTitle}</div>
+              <div class="char-count ${data.seo.seoTitle.length <= 60 ? 'ok' : 'warn'}">${data.seo.seoTitle.length} / 60 字元</div>
+            </div>
+            <div class="seo-item">
+              <label>Meta Description</label>
+              <div class="value">${data.seo.metaDescription}</div>
+              <div class="char-count ${data.seo.metaDescription.length <= 160 ? 'ok' : 'warn'}">${data.seo.metaDescription.length} / 160 字元</div>
+            </div>
+          </div>`;
+        const seoCopy = `SEO Title:\n${data.seo.seoTitle}\n\nMeta Description:\n${data.seo.metaDescription}`;
+
+        const socialHTML = `
+          <div class="social-grid">
+            ${['fb', 'ig', 'threads'].map(p => {
+              const labels = { fb: 'Facebook', ig: 'Instagram', threads: 'Threads' };
+              const icons = { fb: '📘', ig: '📸', threads: '🧵' };
+              return `
+                <div class="social-card">
+                  <div class="platform ${p}">${icons[p]} ${labels[p]}</div>
+                  <p>${data.social[p]}</p>
+                  <button class="btn btn-copy copy-mini" data-copy="social-${p}">📋 複製</button>
+                </div>`;
+            }).join('')}
+          </div>`;
+        const socialCopy = `【Facebook】\n${data.social.fb}\n\n【Instagram】\n${data.social.ig}\n\n【Threads】\n${data.social.threads}`;
+
+        const promptsHTML = `
+          <div class="image-prompts">
+            ${data.prompts.map((p, i) => `
+              <div class="prompt-card">
+                <div class="prompt-label">${p.label}</div>
+                <pre>${p.prompt}</pre>
+                <button class="btn btn-copy copy-mini" data-copy="prompt-${i}" style="margin-top:.5rem">📋 複製</button>
+              </div>`).join('')}
+          </div>`;
+        const promptsCopy = data.prompts.map(p => `[${p.label}]\n${p.prompt}`).join('\n\n');
+
+        const allCopy = [
+          "═══ Jana's Pink 寫文素材 ═══",
+          `類型：${data.catLabel}`,
+          `主題：${data.topic.main}`,
+          '',
+          '═══ 文章標題（【】格式）═══',
+          titlesCopy,
+          '',
+          '═══ 文章草稿 ═══',
+          data.draft.plain,
+          '',
+          '═══ SEO ═══',
+          seoCopy,
+          '',
+          '═══ 社群媒體貼文 ═══',
+          socialCopy,
+          '',
+          '═══ 配圖提示詞（Grok Imagine · 日系清新）═══',
+          promptsCopy,
+        ].join('\n');
+
+        outputsEl.innerHTML = `
+          ${renderSection('all', '📦 全部內容', '總匯出', '<p style="font-size:.88rem;color:var(--text-muted)">一次複製所有素材，直接貼到 WordPress 或 Grok Imagine</p>')}
+          ${renderSection('titles', '📌 文章標題', '5 則・【】格式', titlesHTML)}
+          ${renderSection('draft', '📄 文章草稿', '親切口吻・含小標', draftHTML)}
+          ${renderSection('seo', '🔍 SEO 設定', 'Title + Description', seoHTML)}
+          ${renderSection('social', '📱 社群引流', 'FB / IG / Threads', socialHTML)}
+          ${renderSection('prompts', '🎨 配圖提示詞', '日系清新・Grok Imagine', promptsHTML)}
+        `;
+
+        const copyMap = {
+          all: allCopy,
+          titles: titlesCopy,
+          draft: data.draft.plain,
+          seo: seoCopy,
+          social: socialCopy,
+          prompts: promptsCopy,
+          'social-fb': data.social.fb,
+          'social-ig': data.social.ig,
+          'social-threads': data.social.threads,
+        };
+        data.prompts.forEach((p, i) => { copyMap[`prompt-${i}`] = p.prompt; });
+
+        outputsEl.querySelectorAll('[data-copy]').forEach(btn => {
+          btn.addEventListener('click', () => copyText(copyMap[btn.dataset.copy], btn));
+        });
+      }
+
+      async function generate() {
+        const topic = parseTopic(topicEl.value);
+        if (!topic) {
+          showToast('請先輸入文章主題或關鍵字');
+          topicEl.focus();
+          return;
+        }
+
+        const cat = categoryEl.value;
+        const btn = $('#generateAll');
+        const origHTML = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loading"></span> 產生中...';
+
+        await new Promise(r => setTimeout(r, 550));
+
+        const titles = generateTitles(topic, cat);
+        const draft = generateDraft(topic, cat);
+        const seo = generateSEO(topic, titles, cat);
+        const social = generateSocial(topic, titles, cat);
+        const prompts = generateImagePrompts(topic, cat);
+
+        renderAll({
+          titles, draft, seo, social, prompts,
+          topic, catLabel: CATEGORIES[cat].label,
+        });
+
+        btn.disabled = false;
+        btn.innerHTML = origHTML;
+        showToast('內容產生完成！Have a good day ;)');
+      }
+
+      $('#generateAll').addEventListener('click', generate);
+
+      $('#clearAll').addEventListener('click', () => {
+        outputsEl.innerHTML = '';
+        outputsEl.appendChild(emptyStateEl);
+        emptyStateEl.style.display = '';
+      });
+
+      topicEl.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'Enter') generate();
+      });
+    })();
+  </script>
+</body>
+</html>
